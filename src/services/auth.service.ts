@@ -8,7 +8,6 @@ import {
   sendPasswordResetEmail,
   updateProfile,
   sendEmailVerification,
-  User
 } from 'firebase/auth'
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db } from '../config/firebase'
@@ -27,14 +26,14 @@ export const register = async (email: string, password: string, name: string) =>
 
   // Step 3: Create user profile in Firestore
   await setDoc(doc(db, 'users', user.uid), {
-    uid:         user.uid,
-    name:        name,
-    email:       email.toLowerCase(),
-    role:        'user',            // Default role
-    photoURL:    null,
-    bio:         '',
-    createdAt:   serverTimestamp(),
-    updatedAt:   serverTimestamp(),
+    uid: user.uid,
+    name: name,
+    email: email.toLowerCase(),
+    role: 'user',            // Default role
+    photoURL: null,
+    bio: '',
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   })
 
   // Step 4: Send verification email
@@ -59,16 +58,16 @@ export const signInWithGoogle = async () => {
 
   // Only create Firestore doc on first login
   const userDocRef = doc(db, 'users', user.uid)
-  const userDoc    = await getDoc(userDocRef)
+  const userDoc = await getDoc(userDocRef)
 
   if (!userDoc.exists()) {
     await setDoc(userDocRef, {
-      uid:       user.uid,
-      name:      user.displayName,
-      email:     user.email,
-      role:      'user',
-      photoURL:  user.photoURL,
-      bio:       '',
+      uid: user.uid,
+      name: user.displayName,
+      email: user.email,
+      role: 'user',
+      photoURL: user.photoURL,
+      bio: '',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     })
