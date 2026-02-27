@@ -1,27 +1,19 @@
-// src/hooks/useAuth.ts
-// This hook gives any component access to the current auth state
-
-import { useEffect } from 'react'
-import { onAuthStateChanged } from 'firebase/auth'
-import { auth } from '../config/firebase'
-import { useAuthStore } from '../store/authStore'
+import { useState, useEffect } from 'react';
+import { auth } from '../firebase/config';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 export const useAuth = () => {
-  const { user, loading, setUser, setLoading } = useAuthStore()
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // onAuthStateChanged fires:
-    //   ① On page load (restores session from localStorage)
-    //   ② When user signs in
-    //   ③ When user signs out
-    //   ④ When token refreshes
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser)   // null if not logged in
-      setLoading(false)
-    })
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
 
-    return unsubscribe  // Cleanup listener on unmount
-  }, [])
+    return () => unsubscribe();
+  }, []);
 
-  return { user, loading, isAuthenticated: !!user }
-}
+  return { user, loading };
+};
